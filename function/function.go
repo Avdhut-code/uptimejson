@@ -75,7 +75,7 @@ Examples:
 
 	uptimeJson setPath "~/new_path_url"
 
-	uptimeJson setDate false
+		uptimeJson setDate false
 
 	uptimeJson setTime false
 `
@@ -165,20 +165,6 @@ func HourMin(seconds float64) (int, int) {
 	h := int(seconds) / 3600
 	m := (int(seconds) % 3600) / 60
 	return h, m
-}
-
-// FileExists checks if the given file path exists.
-// Returns true if the file exists, false if it does not.
-// Treats other errors (like permission issues) as "file not accessible".
-func FileExists(path string) bool {
-	_, err := os.Stat(path) // Get file info; we only care about the error here.
-	if err == nil {
-		return true // File exists, no error
-	}
-	// Other errors (e.g., permission issues, disk errors)
-	// should be handled based on your application's needs.
-	// For simplicity, we'll treat any other error as "file might not exist or is inaccessible".
-	return false
 }
 
 // LoadConfig loads user settings from "~/.config/uptimejson/config.json".
