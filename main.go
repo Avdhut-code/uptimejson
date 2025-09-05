@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Avdhut-code/function"
 )
@@ -47,25 +46,13 @@ func main() {
 		function.PrintCurrentLine()
 	}
 
-	currentTime := time.Now()
-
-	hour, min := function.HourMin(seconds)
-
-	year, month, day := currentTime.Date()
-
-	variable := function.Data{
-		TimeHour:   hour,
-		TimeMin:    min,
-		Date:       fmt.Sprintf("%d-%d-%d", year, int(month), day),
-		ActualTime: currentTime,
-	}
-
 	setpath := flag.String("set-path", conf.Path, "path to the json file u can change this as well")
 
 	setdate := flag.Bool("set-date", true, "include date in log entries")
 	settime := flag.Bool("set-time", true, "include time in log entries")
 
 	run_logs := flag.Bool("log", true, "initiats the logging.")
+
 	version := flag.Bool("version", false, "shows the verion of code.")
 	help := flag.Bool("help", false, "show help menu.")
 
@@ -120,9 +107,16 @@ func main() {
 
 	if *run_logs {
 
-		//  HERE BEFOR EDOING THE APPENDIG WE DO CHACKING OF WHAT TO ADD
+		Struct_after_checking, err := function.CheckFields(seconds, conf)
+		if err != nil {
+			log.Fatal(err)
+			function.PrintCurrentLine()
+		}
 
-		logs = append(logs, variable)
+		// // FOR DEBUG
+		// fmt.Println("passs the function ")
+
+		logs = append(logs, Struct_after_checking)
 
 		jsonData, err := json.MarshalIndent(logs, "", " ")
 		if err != nil {

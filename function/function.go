@@ -86,6 +86,57 @@ Error : no command given
 Use "uptimejson <command>" for more information about that topic.`
 )
 
+// CheckFields takes the raw uptime in seconds and the current config settings,
+// and returns a Data struct that respects those settings.
+//
+// Logic:
+//  1. Converts uptime seconds into hours and minutes using HourMin().
+//  2. Builds a new Data struct and always sets TimeHour and TimeMin.
+//  3. If DateFlag is true, adds the current date (YYYY-MM-DD).
+//     Otherwise, leaves Date as an empty string ("").
+//  4. If TimeFlag is true, adds the exact current timestamp.
+//     Otherwise, leaves ActualTime as Go's zero-value (0001-01-01T00:00:00Z).
+//  5. Returns the Data struct, or an error if the input seconds is invalid.
+//
+// This design guarantees the JSON always has consistent fields
+// (hours, minutes, date, time), but the date/time fields may be "empty"
+// when disabled by user config. This makes the output predictable
+// and easy for tools/scripts to consume.
+func CheckFields(seconds float64, conf Setting) (Data, error) {
+
+	if seconds < 0 {
+		return Data{}, fmt.Errorf("invalid uptime value: %f", seconds)
+	}
+
+	hour, min := HourMin(seconds)
+	currentTime := time.Now()
+	year, month, day := currentTime.Date()
+	currentDate := fmt.Sprintf("%d-%d-%d", year, int(month), day)
+
+	newStruct := Data{
+		TimeHour: hour,
+		TimeMin:  min,
+	}
+	// // FOR DEBUG
+	// fmt.Println("we don here on line")
+
+	if conf.DateFlag {
+		newStruct.Date = currentDate
+	} else {
+		newStruct.Date = " "
+	}
+	if conf.TimeFlag {
+		newStruct.ActualTime = time.Now()
+	} else {
+		newStruct.ActualTime = time.Time{}
+	}
+
+	// // FOR DEBUG
+	// fmt.Println(conf)
+
+	return newStruct, nil
+}
+
 // ExpandPath takes a filesystem path and resolves it to an absolute path.
 // - Expands '~' to the current user's home directory.
 // - Returns the path unchanged if it's already absolute (starts with '/').
