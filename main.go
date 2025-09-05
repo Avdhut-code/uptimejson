@@ -48,8 +48,8 @@ func main() {
 
 	setpath := flag.String("set-path", conf.Path, "path to the json file u can change this as well")
 
-	setdate := flag.Bool("set-date", true, "include date in log entries")
-	settime := flag.Bool("set-time", true, "include time in log entries")
+	setdate := flag.Bool("set-date", false, "include date in log entries")
+	settime := flag.Bool("set-time", false, "include time in log entries")
 
 	run_logs := flag.Bool("log", false, "initiats the logging.")
 
@@ -57,6 +57,15 @@ func main() {
 	help := flag.Bool("help", false, "show help menu.")
 
 	flag.Parse()
+
+	Change := false
+
+	// FOR DEBUG
+	// args := flag.Args()
+	// if len(args) < 1 {
+	// 	fmt.Println(function.NoCommand)
+	// 	os.Exit(1)
+	// }
 
 	if *version {
 		fmt.Print(function.VersionValue)
@@ -68,35 +77,57 @@ func main() {
 		return
 	}
 
-	if *setpath != conf.Path {
-		conf.Path = function.ExpandPath(*setpath)
-		function.SaveConfig(conf)
-		fmt.Println("New Path Saved:", conf.Path)
-		return
+	// if *setpath != conf.Path {
+	// 	conf.Path = function.ExpandPath(*setpath)
+	// 	fmt.Println("New Path Saved:", conf.Path)
+	// 	Change = true
 
-		// FOR DEBUG
-		// new_settings := function.Setting{Path: *logPath}
-		// function.SaveConfig(new_settings)
-		// fmt.Println("New Path Saved.", conf.Path)
-	}
+	// 	// FOR DEBUG
+	// 	// new_settings := function.Setting{Path: *logPath}
+	// 	// function.SaveConfig(new_settings)
+	// 	// fmt.Println("New Path Saved.", conf.Path)
+	// }
 
-	if *setdate != conf.DateFlag {
+	// if *setdate != conf.DateFlag {
+	// 	conf.DateFlag = *setdate
+	// 	Change = true
 
+	// 	// FOR DEBUG
+	// 	// fmt.Println(*setdate)
+	// }
+
+	// if *settime != conf.TimeFlag {
+	// 	conf.TimeFlag = *settime
+	// 	Change = true
+	// 	// FOR DEBUG
+	// 	// fmt.Println(*settime)
+	// }
+
+	seen := make(map[string]bool)
+
+	flag.Visit(func(f *flag.Flag) {
+		seen[f.Name] = true
+	})
+
+	if seen["set-date"] && *setdate != conf.DateFlag {
 		conf.DateFlag = *setdate
-		function.SaveConfig(conf)
-		return
-
-		// FOR DEBUG
-		// fmt.Println(*setdate)
+		Change = true
 	}
 
-	if *settime != conf.TimeFlag {
+	if seen["set-time"] && *settime != conf.TimeFlag {
 		conf.TimeFlag = *settime
-		function.SaveConfig(conf)
-		return
+		Change = true
+	}
 
-		// FOR DEBUG
-		// fmt.Println(*settime)
+	if seen["set-path"] && *setpath != conf.Path {
+		conf.Path = function.ExpandPath(*setpath)
+		fmt.Println("New Path Saved:", conf.Path)
+		Change = true
+	}
+
+	if Change {
+		function.SaveConfig(conf)
+		fmt.Println("Saved config:", conf)
 	}
 
 	if *run_logs {
@@ -120,16 +151,16 @@ func main() {
 		//checkign the filepath joineds existance
 		_, err = os.Stat(fullPath)
 		if err != nil {
-			// makign sure that the file is gettin created after knowing tht it dosent existes
-			os.WriteFile(fullPath, []byte(""), 0644)
-			log.Fatal(err)
-			function.PrintCurrentLine()
-		}
+			// // makign sure that the file is gettin created after knowing tht it dosent existes
+			// os.WriteFile(fullPath, []byte(""), 0644)
+			// log.Fatal(err)
+			// function.PrintCurrentLine()
 
-		err := os.MkdirAll(filepath.Dir(fullPath), 0755)
-		if err != nil {
-			log.Fatal(err)
-			function.PrintCurrentLine()
+			err := os.MkdirAll(filepath.Dir(fullPath), 0755)
+			if err != nil {
+				log.Fatal(err)
+				function.PrintCurrentLine()
+			}
 		}
 
 		// // Creating a empty file i k its risky to do it like this
@@ -168,7 +199,6 @@ func main() {
 			log.Fatal(err)
 			function.PrintCurrentLine()
 		}
-
 	}
 
 	// FOR DEBUG

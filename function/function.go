@@ -83,7 +83,7 @@ Examples:
 	NoCommand = `
 Error : no command given
 
-Use "uptimejson <command>" for more information about that topic.`
+Use "uptimejson --help" for more information about that topic.`
 )
 
 // CheckFields takes the raw uptime in seconds and the current config settings,
@@ -173,9 +173,7 @@ func HourMin(seconds float64) (int, int) {
 func LoadConfig() Setting {
 	configPath := filepath.Join(os.Getenv("HOME"), ".config", "uptimejson", "config.json")
 	config := Setting{
-		Path:     configPath,
-		DateFlag: bool(true),
-		TimeFlag: bool(true),
+		Path: configPath,
 	}
 
 	if data, err := os.ReadFile(configPath); err == nil {
