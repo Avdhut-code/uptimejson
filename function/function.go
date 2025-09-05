@@ -1,0 +1,175 @@
+package function
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"os/user"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"time"
+)
+
+// // just for testing perposes anyways works?.
+// func Test() string {
+// 	return "works"
+// }
+
+type Setting struct {
+	Path     string `json:"path"`
+	DateFlag bool   `json:"dateflag"`
+	TimeFlag bool   `json:"timeflag"`
+}
+
+type Data struct {
+	TimeHour   int       `json:"hours"`
+	TimeMin    int       `json:"minutes"`
+	Date       string    `json:"date"`
+	ActualTime time.Time `json:"time"`
+}
+
+const (
+
+	// this is just a place holder for now ill add the real shit real
+	VersionValue = `
+Version of code
+	version : v0.1
+`
+
+	// this is important
+	HelpValue = `
+uptimeJson:
+	-- A simple uptime claculating CLI tool tht creats a json file so that user can then extract the .json content and use it as he want.
+
+Usage:
+
+	uptimeJson [OPTIONS]
+
+	uptimeJson --help
+		-- at this point you know this
+
+	uptimeJson setPath "~/path_url"
+		-- used to set new "path" for the *.json file 
+		-- by deffult its "~/.local/share/uptimelogger/uptime.json"
+		-- always give absalute path althought if u still dont code handels that 
+
+	uptimeJson setDate true
+		-- used to set the incuding of "date" while the code is recording the date
+		-- by defulte its true
+	
+	uptimeJson setTime true
+		-- used to set the including of time while the code is recording the time 
+		-- by defult its true
+
+Options/Flags:
+
+	-v, --version
+		-- Shows the code verison 
+
+	-h, --help
+		-- shows this page to know about tool 
+
+Examples:
+
+	uptimeJson setPath "~/new_path_url"
+
+	uptimeJson setDate false
+
+	uptimeJson setTime false
+`
+	// this is used when no command is given
+	NoCommand = `
+Error : no command given
+
+Use "uptimejson <command>" for more information about that topic.`
+)
+
+// ExpandPath takes a filesystem path and resolves it to an absolute path.
+// - Expands '~' to the current user's home directory.
+// - Returns the path unchanged if it's already absolute (starts with '/').
+// - Converts relative paths into absolute ones based on the current working directory.
+// This ensures all paths used in the program are safe and normalized
+func ExpandPath(path string) string {
+	if path == "" {
+		return path
+	}
+	if strings.HasPrefix(path, "~") {
+		usr, _ := user.Current()
+		return filepath.Join(usr.HomeDir, path[1:])
+	}
+	// if it's already absolute (starts with "/"), just return it
+	if filepath.IsAbs(path) {
+		return path
+	}
+	// otherwise, make it absolute relative to current dir
+	abs, _ := filepath.Abs(path)
+	return abs
+}
+
+// HourMin converts uptime in seconds into hours and minutes.
+// Example: 3700 seconds -> 1 hour, 1 minute.
+func HourMin(seconds float64) (int, int) {
+	h := int(seconds) / 3600
+	m := (int(seconds) % 3600) / 60
+	return h, m
+}
+
+// FileExists checks if the given file path exists.
+// Returns true if the file exists, false if it does not.
+// Treats other errors (like permission issues) as "file not accessible".
+func FileExists(path string) bool {
+	_, err := os.Stat(path) // Get file info; we only care about the error here.
+	if err == nil {
+		return true // File exists, no error
+	}
+	// Other errors (e.g., permission issues, disk errors)
+	// should be handled based on your application's needs.
+	// For simplicity, we'll treat any other error as "file might not exist or is inaccessible".
+	return false
+}
+
+// LoadConfig loads user settings from "~/.config/uptimejson/config.json".
+// If the config file does not exist, default settings are returned.
+// Automatically expands "~" in paths to the user's home directory.
+func LoadConfig() Setting {
+	configPath := filepath.Join(os.Getenv("HOME"), ".config", "uptimejson", "config.json")
+	config := Setting{
+		Path:     configPath,
+		DateFlag: bool(true),
+		TimeFlag: bool(true),
+	}
+
+	if data, err := os.ReadFile(configPath); err == nil {
+		_ = json.Unmarshal(data, &config)
+	}
+	config.Path = ExpandPath(config.Path)
+	return config
+}
+
+// SaveConfig saves the provided Setting struct to ~/.config/uptimejson/config.json.
+// Creates the config directory if it does not exist.
+// Pretty-prints JSON for easier manual editing.
+func SaveConfig(C Setting) {
+	configPath := filepath.Join(os.Getenv("HOME"), ".config", "uptimejson", "config.json")
+	err := os.MkdirAll(filepath.Dir(configPath), 0755)
+	if err != nil {
+		log.Fatal("shit...")
+	}
+
+	data, err := json.MarshalIndent(C, "", "	")
+	if err != nil {
+		log.Fatal(err)
+	}
+	os.WriteFile(configPath, data, 0644)
+}
+
+// PrintCurrentLine prints the current source file and line number to stdout.
+// Useful for debugging to trace exactly where the code is running.
+func PrintCurrentLine() {
+	_, file, line, ok := runtime.Caller(0) // 0 indicates the current function's caller
+	if ok {
+		fmt.Printf("Current line in code: %s:%d\n", file, line)
+	}
+}
