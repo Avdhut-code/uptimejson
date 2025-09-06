@@ -1,0 +1,99 @@
+its_avdhut@Avdhutlinux:~/GO/github$ git add .
+its_avdhut@Avdhutlinux:~/GO/github$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   function/function.go
+        modified:   main.go
+
+its_avdhut@Avdhutlinux:~/GO/github$ git add .
+its_avdhut@Avdhutlinux:~/GO/github$ git commit -m "[ FIXED ] the config file overwrite error" && git push 
+[main 788966b] [ FIXED ] the config file overwrite error
+ 3 files changed, 53 insertions(+), 81 deletions(-)
+Enumerating objects: 13, done.
+Counting objects: 100% (13/13), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (7/7), 1.39 KiB | 1.39 MiB/s, done.
+Total 7 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/Avdhut-code/uptimejson.git
+   04f2280..788966b  main -> main
+its_avdhut@Avdhutlinux:~/GO/github$ rm -rf ~/.config/uptimejson ~/.local/share/uptimejson
+its_avdhut@Avdhutlinux:~/GO/github$ go run main.go --log
+End for test run...
+its_avdhut@Avdhutlinux:~/GO/github$ cat ~/.config/uptimejson/config.json
+{
+        "path": "/home/its_avdhut/.local/share/uptimejson",
+        "dateflag": false,
+        "timeflag": false
+}its_avdhut@Avdhutlinux:~/GO/github$ cat ~/.local/share/uptimejson/2025-09.json
+[
+        {
+                "hours": 7,
+                "minutes": 55,
+                "date": " ",
+                "time": "0001-01-01T00:00:00Z"
+        }
+its_avdhut@Avdhutlinux:~/GO/github$ go run main.go --set-date=true --set-time=true
+cat ~/.config/uptimejson/config.json
+Saved config: {/home/its_avdhut/.local/share/uptimejson true true}
+End for test run...
+{
+        "path": "/home/its_avdhut/.local/share/uptimejson",
+        "dateflag": true,
+        "timeflag": true
+}its_avdhut@Avdhutlinux:~/GO/github$cat ~/.local/share/uptimejson/2025-09.jsone
+[
+        {
+                "hours": 7,
+                "minutes": 55,
+                "date": " ",
+                "time": "0001-01-01T00:00:00Z"
+        }
+]its_avdhut@Avdhutlinux:~/GO/github$go run main.go --loge
+End for test run...
+its_avdhut@Avdhutlinux:~/GO/github$ cat ~/.local/share/uptimejson/2025-09.json
+[
+        {
+                "hours": 7,
+                "minutes": 55,
+                "date": " ",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        {
+                "hours": 7,
+                "minutes": 58,
+                "date": "2025-9-6",
+                "time": "2025-09-06T18:42:04.536931136+05:30"
+        }
+]its_avdhut@Avdhutlinux:~/GO/github$go run main.go --set-date=false
+Saved config: {/home/its_avdhut/.local/share/uptimejson false true}
+End for test run...
+its_avdhut@Avdhutlinux:~/GO/github$ go run main.go --log
+End for test run...
+its_avdhut@Avdhutlinux:~/GO/github$ cat ~/.local/share/uptimejson/2025-09.json
+[
+        {
+                "hours": 7,
+                "minutes": 55,
+                "date": " ",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        {
+                "hours": 7,
+                "minutes": 58,
+                "date": "2025-9-6",
+                "time": "2025-09-06T18:42:04.536931136+05:30"
+        },
+        {
+                "hours": 7,
+                "minutes": 59,
+                "date": " ",
+                "time": "2025-09-06T18:42:58.036367717+05:30"
+        }
+]its_avdhut@Avdhutlinux:~/GO/github$ echo "IT FUCKIGN WORKS LETS GOOOOOOOOOOOOOOOOOOOOOOOOOOOOO."
+IT FUCKIGN WORKS LETS GOOOOOOOOOOOOOOOOOOOOOOOOOOOOO.
+its_avdhut@Avdhutlinux:~/GO/github$ 
