@@ -7,8 +7,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Avdhut-code/function"
@@ -20,54 +18,29 @@ func main() {
 	// function.Test()
 	// function.PrintCurrentLine()
 
-	// file_path_To_data := filepath.Join(os.Getenv("HOME"), ".local", "share", "uptimejson", "timestamp.json")
-
-	// defaultPath := function.ExpandPath(file_path_To_data)
-
 	conf := function.LoadConfig()
 
+	seconds := function.GiveSeconds()
+
+	// FOR DEBUG
 	// fmt.Println(conf.Path)
+	// fmt.Println(seconds)
 
 	var logs []function.Data
 
-	// if data, err := os.ReadFile(conf.Path); err == nil && len(data) > 0 {
-	// 	_ = json.Unmarshal(data, &logs)
-	// }
-
-	secondValue, _ := os.ReadFile("/proc/uptime")
-
-	fields := strings.Fields(strings.TrimSpace(string(secondValue)))
-	if len(fields) < 1 {
-		fmt.Println("invalid /proc/uptime format")
-		return
-	}
-
-	seconds, err := strconv.ParseFloat(fields[0], 64)
-	if err != nil {
-		log.Fatal(err)
-		function.PrintCurrentLine()
-	}
+	Change := false
 
 	setpath := flag.String("set-path", conf.Path, "path to the json file u can change this as well")
 
+	run_logs := flag.Bool("log", false, "initiats the logging.")
+
 	setdate := flag.Bool("set-date", false, "include date in log entries")
 	settime := flag.Bool("set-time", false, "include time in log entries")
-
-	run_logs := flag.Bool("log", false, "initiats the logging.")
 
 	version := flag.Bool("version", false, "shows the verion of code.")
 	help := flag.Bool("help", false, "show help menu.")
 
 	flag.Parse()
-
-	Change := false
-
-	// FOR DEBUG
-	// args := flag.Args()
-	// if len(args) < 1 {
-	// 	fmt.Println(function.NoCommand)
-	// 	os.Exit(1)
-	// }
 
 	if *version {
 		fmt.Print(function.VersionValue)
@@ -81,36 +54,10 @@ func main() {
 
 	// if *setpath != conf.Path {
 	// 	conf.Path = function.ExpandPath(*setpath)
+	// 	function.SaveConfig(conf)
 	// 	fmt.Println("New Path Saved:", conf.Path)
-	// 	Change = true
-
-	// 	// FOR DEBUG
-	// 	// new_settings := function.Setting{Path: *logPath}
-	// 	// function.SaveConfig(new_settings)
-	// 	// fmt.Println("New Path Saved.", conf.Path)
+	// 	return
 	// }
-
-	// if *setdate != conf.DateFlag {
-	// 	conf.DateFlag = *setdate
-	// 	Change = true
-
-	// 	// FOR DEBUG
-	// 	// fmt.Println(*setdate)
-	// }
-
-	// if *settime != conf.TimeFlag {
-	// 	conf.TimeFlag = *settime
-	// 	Change = true
-	// 	// FOR DEBUG
-	// 	// fmt.Println(*settime)
-	// }
-
-	if *setpath != conf.Path {
-		conf.Path = function.ExpandPath(*setpath)
-		function.SaveConfig(conf)
-		fmt.Println("New Path Saved:", conf.Path)
-		return
-	}
 
 	seen := make(map[string]bool)
 
@@ -136,6 +83,7 @@ func main() {
 			fmt.Println("New Path set to:", conf.Path)
 		}
 	}
+
 	if Change {
 		function.SaveConfig(conf)
 		fmt.Println("Saved config:", conf)
@@ -149,38 +97,33 @@ func main() {
 		filename := fmt.Sprintf("%d-%02d.json", year, int(month))
 
 		// joining the path to the file tht way we go and make/check the file
-		fullPath := filepath.Join(conf.Path, filename) // "2025-10.json")
+		fullPath := filepath.Join(conf.Path, filename) //  FOR DEBUG "2025-10.json")
 
 		// FOR DEBUG
 		// fmt.Println(fullPath)
 
-		// if data, err := os.ReadFile(fullPath); err == nil && len(data) > 0 {
-		// 	fmt.Println("we Unmarshaling the data")
-		// 	_ = json.Unmarshal(data, &logs)
-		// }
-
 		//checkign the filepath joineds existance
-		_, err = os.Stat(fullPath)
+		_, err := os.Stat(fullPath)
 		if err != nil {
-			// // makign sure that the file is gettin created after knowing tht it dosent existes
-			// os.WriteFile(fullPath, []byte(""), 0644)
-			// log.Fatal(err)
-			// function.PrintCurrentLine()
 
 			err := os.MkdirAll(filepath.Dir(fullPath), 0755)
 			if err != nil {
 				log.Fatal(err)
-				function.PrintCurrentLine()
+				function.CurrentLine()
 			}
+
+			// makign sure that the file is gettin created after knowing tht it dosent existes
+			os.WriteFile(fullPath, []byte(""), 0644)
 		}
 
 		// // Creating a empty file i k its risky to do it like this
 		// os.WriteFile(fullPath, []byte(""), 0644)
 
 		Struct_after_checking, err := function.CheckFields(seconds, conf)
+
 		if err != nil {
 			log.Fatal(err)
-			function.PrintCurrentLine()
+			function.CurrentLine()
 		}
 
 		// // FOR DEBUG
@@ -188,15 +131,17 @@ func main() {
 
 		data, err := os.ReadFile(fullPath)
 		if err == nil && len(data) > 0 {
+			// currentl empty data [-] so it formas a arry in file
 			_ = json.Unmarshal(data, &logs)
 		}
 
+		// then we append it to the emty array then we marshal it and then write
 		logs = append(logs, Struct_after_checking)
 
 		jsonData, err := json.MarshalIndent(logs, "", "\t")
 		if err != nil {
 			log.Fatal(err)
-			function.PrintCurrentLine()
+			function.CurrentLine()
 		}
 
 		// err = os.MkdirAll(filepath.Dir(fullPath), 0755)
@@ -208,7 +153,7 @@ func main() {
 		err = os.WriteFile(fullPath, jsonData, 0644)
 		if err != nil {
 			log.Fatal(err)
-			function.PrintCurrentLine()
+			function.CurrentLine()
 		}
 	}
 

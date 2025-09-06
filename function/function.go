@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -85,6 +86,32 @@ Error : no command given
 
 Use "uptimejson --help" for more information about that topic.`
 )
+
+// GiveSeconds reads the Linux /proc/uptime file and returns the system uptime
+// in seconds as a float64.
+//
+// The function:
+//  1. Reads "/proc/uptime" (Linux-only).
+//  2. Splits the file contents on whitespace and parses the first field
+//     as a floating-point number (the uptime in seconds).
+//  3. Returns that value.
+func GiveSeconds() float64 {
+	secondValue, _ := os.ReadFile("/proc/uptime")
+
+	fields := strings.Fields(strings.TrimSpace(string(secondValue)))
+	if len(fields) < 1 {
+		log.Fatal("invalid /proc/uptime format")
+		CurrentLine()
+	}
+
+	seconds, err := strconv.ParseFloat(fields[0], 64)
+	if err != nil {
+		log.Fatal(err)
+		CurrentLine()
+	}
+
+	return seconds
+}
 
 // CheckFields takes the raw uptime in seconds and the current config settings,
 // and returns a Data struct that respects those settings.
@@ -201,7 +228,7 @@ func SaveConfig(C Setting) {
 	err := os.MkdirAll(filepath.Dir(configPath), 0755)
 	if err != nil {
 		log.Fatal(err)
-		PrintCurrentLine()
+		CurrentLine()
 	}
 
 	data, err := json.MarshalIndent(C, "", "\t")
@@ -214,9 +241,9 @@ func SaveConfig(C Setting) {
 	}
 }
 
-// PrintCurrentLine prints the current source file and line number to stdout.
+// CurrentLine prints the current source file and line number to stdout.
 // Useful for debugging to trace exactly where the code is running.
-func PrintCurrentLine() {
+func CurrentLine() {
 	_, file, line, ok := runtime.Caller(0) // 0 indicates the current function's caller
 	if ok {
 		fmt.Printf("Current line in code: %s:%d\n", file, line)
