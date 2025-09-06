@@ -26,11 +26,13 @@ func main() {
 
 	conf := function.LoadConfig()
 
+	// fmt.Println(conf.Path)
+
 	var logs []function.Data
 
-	if data, err := os.ReadFile(conf.Path); err == nil && len(data) > 0 {
-		_ = json.Unmarshal(data, &logs)
-	}
+	// if data, err := os.ReadFile(conf.Path); err == nil && len(data) > 0 {
+	// 	_ = json.Unmarshal(data, &logs)
+	// }
 
 	secondValue, _ := os.ReadFile("/proc/uptime")
 
@@ -103,6 +105,13 @@ func main() {
 	// 	// fmt.Println(*settime)
 	// }
 
+	if *setpath != conf.Path {
+		conf.Path = function.ExpandPath(*setpath)
+		function.SaveConfig(conf)
+		fmt.Println("New Path Saved:", conf.Path)
+		return
+	}
+
 	seen := make(map[string]bool)
 
 	flag.Visit(func(f *flag.Flag) {
@@ -119,12 +128,14 @@ func main() {
 		Change = true
 	}
 
-	if seen["set-path"] && *setpath != conf.Path {
-		conf.Path = function.ExpandPath(*setpath)
-		fmt.Println("New Path Saved:", conf.Path)
-		Change = true
+	if seen["set-path"] {
+		newPath := function.ExpandPath(*setpath)
+		if newPath != conf.Path {
+			conf.Path = newPath
+			Change = true
+			fmt.Println("New Path set to:", conf.Path)
+		}
 	}
-
 	if Change {
 		function.SaveConfig(conf)
 		fmt.Println("Saved config:", conf)
@@ -138,7 +149,7 @@ func main() {
 		filename := fmt.Sprintf("%d-%02d.json", year, int(month))
 
 		// joining the path to the file tht way we go and make/check the file
-		fullPath := filepath.Join(filepath.Dir(conf.Path), filename) // "2025-10.json")
+		fullPath := filepath.Join(conf.Path, filename) // "2025-10.json")
 
 		// FOR DEBUG
 		// fmt.Println(fullPath)

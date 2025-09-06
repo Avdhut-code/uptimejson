@@ -172,12 +172,20 @@ func HourMin(seconds float64) (int, int) {
 // Automatically expands "~" in paths to the user's home directory.
 func LoadConfig() Setting {
 	configPath := filepath.Join(os.Getenv("HOME"), ".config", "uptimejson", "config.json")
+
 	config := Setting{
-		Path: configPath,
+		Path:     filepath.Join(os.Getenv("HOME"), ".local", "share", "uptimejson"),
+		DateFlag: false,
+		TimeFlag: false,
 	}
 
 	if data, err := os.ReadFile(configPath); err == nil {
 		_ = json.Unmarshal(data, &config)
+	} else {
+		// config.json missing → create one with defaults
+		_ = os.MkdirAll(filepath.Dir(configPath), 0755)
+		b, _ := json.MarshalIndent(config, "", "\t")
+		_ = os.WriteFile(configPath, b, 0644)
 	}
 	config.Path = ExpandPath(config.Path)
 	return config
@@ -188,16 +196,22 @@ func LoadConfig() Setting {
 // Pretty-prints JSON for easier manual editing.
 func SaveConfig(C Setting) {
 	configPath := filepath.Join(os.Getenv("HOME"), ".config", "uptimejson", "config.json")
+
+	// ensure parent directory exists
 	err := os.MkdirAll(filepath.Dir(configPath), 0755)
 	if err != nil {
-		log.Fatal("shit...")
+		log.Fatal(err)
+		PrintCurrentLine()
 	}
 
-	data, err := json.MarshalIndent(C, "", "	")
+	data, err := json.MarshalIndent(C, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
-	os.WriteFile(configPath, data, 0644)
+	err = os.WriteFile(configPath, data, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // PrintCurrentLine prints the current source file and line number to stdout.
