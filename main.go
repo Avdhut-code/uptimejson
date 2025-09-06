@@ -155,9 +155,9 @@ func main() {
 			log.Fatal(err)
 			function.CurrentLine()
 		}
+		fmt.Println("log Registred...")
 	}
 
 	// FOR DEBUG
-	fmt.Println("log Registred...")
 	// fmt.Println("End...")
 }

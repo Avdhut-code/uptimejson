@@ -35,8 +35,7 @@ const (
 
 	// this is just a place holder for now ill add the real shit real
 	VersionValue = `
-Version of code
-	version : v0.1
+Version of code : v0.1
 `
 
 	// this is important
@@ -51,10 +50,10 @@ Usage:
 	uptimeJson --help
 		-- at this point you know this
 
-	uptimeJson setPath "~/path_url"
+	uptimeJson setPath "$HOME/path_url"
+		-- always give absalute path althought if u still dont code handels that 
 		-- used to set new "path" for the *.json file 
 		-- by defult its "~/.local/share/uptimelogger/YYYY-MM.json"
-		-- always give absalute path althought if u still dont code handels that 
 
 	uptimeJson setDate true
 		-- used to set the incuding of "date" while the code is recording the date
@@ -74,12 +73,12 @@ Options/Flags:
 
 Examples:
 
-	uptimeJson setPath "~/new_path_url"
+	uptimeJson --set-path "~/new_path_url"
 
-	uptimeJson setDate false
+	uptimeJson --setDate=false
 
-	uptimeJson setTime false
-	
+	uptimeJson --set-time=false 
+
 `
 	// this is used when no command is given
 	NoCommand = `
