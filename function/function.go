@@ -53,7 +53,7 @@ Usage:
 
 	uptimeJson setPath "~/path_url"
 		-- used to set new "path" for the *.json file 
-		-- by deffult its "~/.local/share/uptimelogger/uptime.json"
+		-- by defult its "~/.local/share/uptimelogger/YYYY-MM.json"
 		-- always give absalute path althought if u still dont code handels that 
 
 	uptimeJson setDate true
@@ -76,9 +76,10 @@ Examples:
 
 	uptimeJson setPath "~/new_path_url"
 
-		uptimeJson setDate false
+	uptimeJson setDate false
 
 	uptimeJson setTime false
+	
 `
 	// this is used when no command is given
 	NoCommand = `

@@ -1,0 +1,13 @@
+# /etc/systemd/system/uptimejson-startup.service
+[Unit]
+Description=Log uptime at system startup
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uptimejson --log
+Environment=HOME=%h
+User=avdhut
+
+[Install]
+WantedBy=multi-user.target

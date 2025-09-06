@@ -145,7 +145,7 @@ func main() {
 		}
 
 		// err = os.MkdirAll(filepath.Dir(fullPath), 0755)
-		// if err != nil {
+		// if err != nil {``
 		// 	log.Fatal(err)
 		// 	function.PrintCurrentLine()
 		// }
@@ -158,5 +158,6 @@ func main() {
 	}
 
 	// FOR DEBUG
-	fmt.Println("End for test run...")
+	fmt.Println("log Registred...")
+	// fmt.Println("End...")
 }

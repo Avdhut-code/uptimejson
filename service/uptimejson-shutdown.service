@@ -1,0 +1,14 @@
+# /etc/systemd/system/uptimejson-shutdown.service
+[Unit]
+Description=Log uptime at system shutdown
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uptimejson --log
+Environment=HOME=%h
+User=avdhut
+
+[Install]
+WantedBy=shutdown.target

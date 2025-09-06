@@ -1,0 +1,69 @@
+.\" Manpage for uptimejson
+.TH UPTIMEJSON 1 "September 2025" "uptimejson v0.1" "User Commands"
+.SH NAME
+uptimejson \- log system uptime into JSON files
+.SH SYNOPSIS
+.B uptimejson
+[\fIOPTIONS\fR]
+
+.SH DESCRIPTION
+.B uptimejson
+is a simple CLI tool that logs Linux system uptime into monthly JSON files.
+The tool reads
+.I /proc/uptime
+and appends entries into JSON files for later analysis.
+
+By default, log files are written to
+.I ~/.local/share/uptimejson/YYYY-MM.json
+and user preferences are stored in
+.I ~/.config/uptimejson/config.json.
+
+.SH OPTIONS
+.TP
+.BR --log
+Record current uptime into the monthly JSON log file.
+.TP
+.BR --set-path=\fIDIR\fR
+Set a new directory for monthly JSON log files.
+.TP
+.BR --set-date[=true|false]
+Enable or disable logging the current date in entries.
+.TP
+.BR --set-time[=true|false]
+Enable or disable logging the exact timestamp in entries.
+.TP
+.BR --version
+Show version information.
+.TP
+.BR --help
+Show this help page.
+
+.SH FILES
+.TP
+~/.config/uptimejson/config.json
+User configuration file (log path, flags).
+.TP
+~/.local/share/uptimejson/YYYY-MM.json
+Monthly JSON log files.
+
+.SH EXAMPLES
+Log uptime using current settings:
+.EX
+uptimejson --log
+.EE
+
+Change log directory:
+.EX
+uptimejson --set-path ~/logs
+.EE
+
+Enable date and time in entries:
+.EX
+uptimejson --set-date=true --set-time=true
+.EE
+
+.SH AUTHOR
+Written by Avdhut <github.com/Avdhut-code/uptimejson>.
+
+.SH SEE ALSO
+uptime(1), systemd.timer(5)
