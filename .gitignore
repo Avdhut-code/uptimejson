@@ -1,0 +1,12 @@
+# Go build outputs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# prevent binary confusion with source
+main
+uptimejson
