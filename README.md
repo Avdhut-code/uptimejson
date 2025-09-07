@@ -47,11 +47,53 @@ uptimejson --set-path "$HOME/custom_path"
 uptimejson --version
 
 ```
+---
 
 # Configuration
 
 tool saves settings in config.json : 
-
 ```bash 
 ~/.config/uptimejson/config.json
-````
+```
+
+Example :
+```json
+{
+    "path": "/home/user/.local/share/uptimejson",
+    "dateflag": true,
+    "timeflag": true
+}
+
+```
+---
+
+# Log files
+
+Logs are stored in :
+```bash 
+~/.local/share/uptimejson/YYYY-MM.json
+```
+
+Example :
+```json
+{
+    "hours": 12,
+    "minutes": 45,
+    "date": "2025-09-06",
+    "time": "2025-09-06T18:42:04+05:30"
+}
+```
+
+---
+
+# Services (Optional but not recommended)
+
+- If you want to run uptimejson automatically at startup or shutdown,
+- use the provided make_service.sh along with the unit files in service_related/.
+
+command to set-up it :
+```bash 
+./make_service.sh --user
+systemctl --user enable --now uptimejson-startup.service
+systemctl --user enable --now uptimejson-shutdown.service
+```

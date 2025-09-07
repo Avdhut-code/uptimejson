@@ -25,6 +25,8 @@ TARGET_USER="${SUDO_USER:-${USER}}"
 TARGET_HOME="$(eval echo "~${TARGET_USER}")"
 BIN_NAME="uptimejson"
 REPO_ROOT="$(pwd)"
+USER_CONFIG_DIR="${TARGET_HOME}/.config/uptimejson"
+USER_CONFIG_PATH="${USER_CONFIG_DIR}/config.json"
 
 echo "Installing for user: ${TARGET_USER}"
 echo "Target HOME: ${TARGET_HOME}"
@@ -48,27 +50,6 @@ else
   echo "Elevated privileges required to place binary in /usr/local/bin/"
   sudo install -Dm755 "${BIN_NAME}" /usr/local/bin/${BIN_NAME}
 fi
-
-# # 3) Install default config into user's config dir (only if missing unless --force)
-USER_CONFIG_DIR="${TARGET_HOME}/.config/uptimejson"
-USER_CONFIG_PATH="${USER_CONFIG_DIR}/config.json"
-# TEMPLATE_CONFIG="files/config.json"
-
-# mkdir -p "${USER_CONFIG_DIR}"
-# if [[ ! -f "${TEMPLATE_CONFIG}" ]]; then
-#   echo "Warning: template ${TEMPLATE_CONFIG} not found. Skipping config copy."
-# else
-#   if [[ -f "${USER_CONFIG_PATH}" && "${FORCE}" != true ]]; then
-#     echo "User config exists at ${USER_CONFIG_PATH} — not overwriting (use --force)."
-#   else
-#     echo "Installing default config to ${USER_CONFIG_PATH}"
-#     if [[ "${EUID}" -eq 0 && -n "${SUDO_USER:-}" ]]; then
-#       sudo -u "${TARGET_USER}" install -Dm644 "${TEMPLATE_CONFIG}" "${USER_CONFIG_PATH}"
-#     else
-#       install -Dm644 "${TEMPLATE_CONFIG}" "${USER_CONFIG_PATH}"
-#     fi
-#   fi
-# fi
 
 # 4) Ensure log directory exists
 LOG_DIR="${TARGET_HOME}/.local/share/uptimejson"
