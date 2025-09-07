@@ -50,16 +50,16 @@ Usage:
 	uptimeJson --help
 		-- at this point you know this
 
-	uptimeJson setPath "$HOME/path_url"
+	uptimeJson --set-path "$HOME/path_url"
 		-- always give absalute path althought if u still dont code handels that 
 		-- used to set new "path" for the *.json file 
 		-- by defult its "~/.local/share/uptimelogger/YYYY-MM.json"
 
-	uptimeJson setDate true
+		uptimeJson --set-date=true
 		-- used to set the incuding of "date" while the code is recording the date
 		-- by defulte its true
 	
-	uptimeJson setTime true
+	uptimeJson --set-time=true
 		-- used to set the including of time while the code is recording the time 
 		-- by defult its true
 
@@ -84,7 +84,8 @@ Examples:
 	NoCommand = `
 Error : no command given
 
-Use "uptimejson --help" for more information about that topic.`
+Use "uptimejson --help" for more information about that topic.
+`
 )
 
 // GiveSeconds reads the Linux /proc/uptime file and returns the system uptime
