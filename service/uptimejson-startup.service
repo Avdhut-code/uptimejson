@@ -1,4 +1,4 @@
-# /etc/systemd/system/uptimejson-startup.service
+# /etc/systemd/system/uptimejson-startup.service 
 [Unit]
 Description=Log uptime at system startup
 After=multi-user.target

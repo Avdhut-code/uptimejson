@@ -3,6 +3,7 @@
 # Usage:
 #   ./make_service.sh --user            # install into ~/.config/systemd/user/
 #   sudo ./make_service.sh --system usrname  # install into /etc/systemd/system/ and set User=usrname when enabling
+#   shit this is lots of work
 set -euo pipefail
 
 MODE=""

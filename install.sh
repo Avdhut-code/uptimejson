@@ -50,8 +50,8 @@ else
 fi
 
 # # 3) Install default config into user's config dir (only if missing unless --force)
-# USER_CONFIG_DIR="${TARGET_HOME}/.config/uptimejson"
-# USER_CONFIG_PATH="${USER_CONFIG_DIR}/config.json"
+USER_CONFIG_DIR="${TARGET_HOME}/.config/uptimejson"
+USER_CONFIG_PATH="${USER_CONFIG_DIR}/config.json"
 # TEMPLATE_CONFIG="files/config.json"
 
 # mkdir -p "${USER_CONFIG_DIR}"
@@ -102,8 +102,8 @@ cat <<EOF
 
 Install complete.
 - binary -> /usr/local/bin/uptimejson
-- config -> $ {USER_CONFIG_PATH} (created if missing)
-- log dir -> $ {LOG_DIR}
+- config -> ${USER_CONFIG_PATH} (created if missing)
+- log dir -> ${LOG_DIR}
 
 Service files NOT installed. Put your unit files in repo/service_related/ and use make_service.sh to install them when ready.
 
