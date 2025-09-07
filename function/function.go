@@ -203,8 +203,8 @@ func LoadConfig() Setting {
 
 	config := Setting{
 		Path:     filepath.Join(os.Getenv("HOME"), ".local", "share", "uptimejson"),
-		DateFlag: false,
-		TimeFlag: false,
+		DateFlag: true,
+		TimeFlag: true,
 	}
 
 	if data, err := os.ReadFile(configPath); err == nil {

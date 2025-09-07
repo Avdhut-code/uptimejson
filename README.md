@@ -47,3 +47,11 @@ uptimejson --set-path "$HOME/custom_path"
 uptimejson --version
 
 ```
+
+# Configuration
+
+tool saves settings in config.json : 
+
+```bash 
+~/.config/uptimejson/config.json
+````
