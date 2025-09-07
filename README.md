@@ -23,7 +23,7 @@ Clone the repo and run the installer:
 ```bash
 git clone https://github.com/Avdhut-code/uptimejson.git
 cd uptimejson
-sudo ./install.sh
+bash install.sh
 ```
 
 ---
